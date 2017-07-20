@@ -50,7 +50,7 @@ public class LineDaoRestImpl {
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.add("Authorization", "Bearer " + lineConfig.getLineAPIToken());
+			headers.add("Authorization", "Bearer " + request.getToken());
 
 			MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
 			body.add("message", request.getMessage());

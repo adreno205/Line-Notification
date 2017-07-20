@@ -2,7 +2,9 @@ package ecorp.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.JsonPath;
+import ecorp.config.Constant;
 import ecorp.config.DataAPIConfiguration;
+import ecorp.config.LineAPIConfiguration;
 import ecorp.dao.DataDaoRestImpl;
 import ecorp.dao.LineDaoRestImpl;
 import ecorp.domain.LineMsgControllerRequest;
@@ -23,11 +25,17 @@ public class MessageService {
     @Autowired
     private DataAPIConfiguration dataConfig;
 
+    @Autowired
+    private LineAPIConfiguration lineConfig;
+
     private static Logger logger = Logger.getLogger(MessageService.class);
 
     public String addLineNoti(LineMsgControllerRequest lineRequest) {
-
-        String response = lineDaoRest.sendExchange(lineRequest);
+        String response = "";
+        for (String token: lineConfig.getLineAPITokenList()) {
+            lineRequest.setToken(token);
+             response = lineDaoRest.sendExchange(lineRequest);
+        }
         logger.info("Send line notification Successful");
 
         return response;
@@ -35,21 +43,38 @@ public class MessageService {
 
     public String calculateData(String name) {
 
-        //you must use name to specific what's coin to calculated
         ResponseEntity<String> responseJson = dataDaoRest.sendExchange();
 
         System.out.printf("Response for Get api is ==>  ");
         System.out.println(responseJson.getBody().toString());
 
         String buyJsonExp = dataConfig.getHighBuyJsonPath();
-        Integer highestBuyPrice = JsonPath.read(responseJson.getBody(),buyJsonExp);
-
         String sellJsonExp = dataConfig.getHighSellJsonPath();
-        Integer highestSellPrice = JsonPath.read(responseJson.getBody(),sellJsonExp);
+
+        switch (name) {
+            case "thb_btc":
+                buyJsonExp = buyJsonExp.replace("X", Constant.THB_BTC_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.THB_BTC_ID);break;
+            case "btc_eth":
+                buyJsonExp = buyJsonExp.replace("X", Constant.BTC_ETH_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.BTC_ETH_ID);break;
+            case "thb_eth":
+                buyJsonExp = buyJsonExp.replace("X", Constant.THB_ETH_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.THB_ETH_ID);break;
+            case "thb_xrp":
+                buyJsonExp = buyJsonExp.replace("X", Constant.THB_XRP_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.THB_XRP_ID);break;
+            default:
+                buyJsonExp = buyJsonExp.replace("X", Constant.THB_BTC_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.THB_BTC_ID);break;
+        }
+
+        Object highestBuyPrice = JsonPath.read(responseJson.getBody(),buyJsonExp);
+        Object highestSellPrice = JsonPath.read(responseJson.getBody(),sellJsonExp);
 
         logger.info("Calculate Data Successful");
 
-        String responseMessage = "ราคารับซื้อล่าสุด : "+highestBuyPrice+"\nราคาตั้งขายล่าสุด : "+highestSellPrice;
+        String responseMessage = "Coins: "+name.toUpperCase()+"\nราคารับซื้อล่าสุด : "+highestBuyPrice+"\nราคาตั้งขายล่าสุด : "+highestSellPrice;
         return responseMessage;
     }
 
