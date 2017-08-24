@@ -24,8 +24,16 @@ public class GetPriceService {
         String name = "thb_btc";
         String response = messageService.calculateData(name);
 
+        logger.info("Getting Price from ETH coins : ");
+        String name2 = "thb_eth";
+        String response2 = messageService.calculateData(name2);
+
+        logger.info("Getting Price from OMG coins : ");
+        String name3 = "thb_omg";
+        String response3 = messageService.calculateData(name3);
+
         LineMsgControllerRequest lineRequest = new LineMsgControllerRequest();
-        lineRequest.setMessage(response);
+        lineRequest.setMessage(response+"\n\n"+response2+"\n\n"+response3);
         messageService.addLineNoti(lineRequest);
     }
 }

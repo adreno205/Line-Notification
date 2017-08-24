@@ -64,6 +64,9 @@ public class MessageService {
             case "thb_xrp":
                 buyJsonExp = buyJsonExp.replace("X", Constant.THB_XRP_ID);
                 sellJsonExp = sellJsonExp.replace("X", Constant.THB_XRP_ID);break;
+            case "thb_omg":
+                buyJsonExp = buyJsonExp.replace("X", Constant.THB_OMG_ID);
+                sellJsonExp = sellJsonExp.replace("X", Constant.THB_OMG_ID);break;
             default:
                 buyJsonExp = buyJsonExp.replace("X", Constant.THB_BTC_ID);
                 sellJsonExp = sellJsonExp.replace("X", Constant.THB_BTC_ID);break;
