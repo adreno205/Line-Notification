@@ -30,11 +30,17 @@ public class DataDaoRestImpl {
 
 	private static Logger logger = Logger.getLogger(MessageService.class);
 
+	//Add to pretend request call from website
+	private  final String USER_AGENT = "Mozilla/5.0";
+
 	public ResponseEntity<String> sendExchange() throws RuntimeException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("User-Agent", USER_AGENT);
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 		RestTemplate restTemplate = new RestTemplate();
 		String fooResourceUrl = dataConfig.getDataAPIPath();
-		ResponseEntity<String> response
-				= restTemplate.getForEntity(fooResourceUrl, String.class);
+
+		ResponseEntity<String> response = restTemplate.exchange(fooResourceUrl, HttpMethod.GET, entity, String.class);
 		return response;
 	}
 
