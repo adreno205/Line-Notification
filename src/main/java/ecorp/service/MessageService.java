@@ -13,7 +13,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.linecorp.bot.model.event.Event;
+import com.linecorp.bot.model.event.MessageEvent;
+import com.linecorp.bot.model.event.message.TextMessageContent;
+import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.spring.boot.annotation.EventMapping;
+import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
+
+// may be we must put it in main class
+// https://github.com/line/line-bot-sdk-java/blob/master/sample-spring-boot-echo/src/main/java/com/example/bot/spring/echo/EchoApplication.java
+
 @Service
+@LineMessageHandler
 public class MessageService {
 
     @Autowired
@@ -79,6 +90,27 @@ public class MessageService {
 
         String responseMessage = "Coins: "+name.toUpperCase()+"\nราคารับซื้อล่าสุด : "+highestBuyPrice+"\nราคาตั้งขายล่าสุด : "+highestSellPrice;
         return responseMessage;
+    }
+
+    @EventMapping
+    public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
+        System.out.println("event: " + event);
+
+        String gotMsg = event.getMessage().getText();
+        String sentMsg;
+        if(gotMsg.substring(0,1).equals("@")){
+            sentMsg = gotMsg.substring(1);
+            sentMsg = calculateData(sentMsg);
+        }
+        else {
+            sentMsg = event.getMessage().getText();
+        }
+        return new TextMessage(sentMsg);
+    }
+
+    @EventMapping
+    public void handleDefaultMessageEvent(Event event) {
+        System.out.println("event: " + event);
     }
 
 
