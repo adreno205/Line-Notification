@@ -34,6 +34,6 @@ public class GetPriceService {
 
         LineMsgControllerRequest lineRequest = new LineMsgControllerRequest();
         lineRequest.setMessage(response+"\n\n"+response2+"\n\n"+response3);
-        messageService.addLineNoti(lineRequest);
+        //messageService.addLineNoti(lineRequest);
     }
 }
